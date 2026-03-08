@@ -37,10 +37,11 @@ export async function POST(req: Request) {
 
     // Parse room config from request body.
     const body = await req.json();
+
     // Recreate the RoomConfiguration object from JSON object.
     const roomConfig = body?.room_config
-  ? RoomConfiguration.fromJson(body.room_config, { ignoreUnknownFields: true })
-  : undefined;
+      ? RoomConfiguration.fromJson(body.room_config, { ignoreUnknownFields: true })
+      : undefined;
 
     // Generate participant token
     const participantName = 'user';
@@ -49,8 +50,8 @@ export async function POST(req: Request) {
 
     const participantToken = await createParticipantToken(
       { identity: participantIdentity, name: participantName },
-roomName,
-roomConfig ?? {},
+      roomName,
+      roomConfig
     );
 
     // Return connection details
@@ -60,27 +61,32 @@ roomConfig ?? {},
       participantName,
       participantToken,
     };
+
     const headers = new Headers({
       'Cache-Control': 'no-store',
     });
+
     return NextResponse.json(data, { headers });
   } catch (error) {
     if (error instanceof Error) {
       console.error(error);
       return new NextResponse(error.message, { status: 500 });
     }
+
+    return new NextResponse('Unknown error', { status: 500 });
   }
 }
 
 function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
-  roomConfig: RoomConfiguration
+  roomConfig?: RoomConfiguration
 ): Promise<string> {
   const at = new AccessToken(API_KEY, API_SECRET, {
     ...userInfo,
     ttl: '15m',
   });
+
   const grant: VideoGrant = {
     room: roomName,
     roomJoin: true,
@@ -88,6 +94,7 @@ function createParticipantToken(
     canPublishData: true,
     canSubscribe: true,
   };
+
   at.addGrant(grant);
 
   if (roomConfig) {
