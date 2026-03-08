@@ -189,7 +189,9 @@ export function TileLayout({
                     width={videoWidth}
                     height={videoHeight}
                     trackRef={agentVideoTrack}
-                    className={cn(chatOpen ? 'size-[90px] object-cover' : 'w-full h-full object-cover')}
+                    className={cn(
+                      chatOpen ? 'size-[90px] object-cover' : 'h-full w-full object-cover'
+                    )}
                   />
                 </motion.div>
               )}
