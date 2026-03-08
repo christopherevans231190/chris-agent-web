@@ -50,7 +50,8 @@ export async function POST(req: Request) {
     const participantToken = await createParticipantToken(
       { identity: participantIdentity, name: participantName },
 roomName,
-roomConfig ?? {}
+roomConfig ?? {},
+    );
 
     // Return connection details
     const data: ConnectionDetails = {
